@@ -23,6 +23,16 @@ void ServoSystem_Init(TIM_HandleTypeDef *timer_handle,
                       uint32_t timer_channel);
 
 /**
+ * @brief Commands an arbitrary servo position.
+ *
+ * The requested angle is clamped to the supported range before being
+ * converted to a PWM pulse width.
+ *
+ * @param angle_degrees Requested angle in degrees.
+ */
+void ServoSystem_SetPosition(float angle_degrees);
+
+/**
  * @brief Commands the servo to the configured up position.
  */
 void ServoSystem_Up(void);

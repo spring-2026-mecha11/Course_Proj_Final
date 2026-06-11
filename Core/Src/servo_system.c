@@ -24,15 +24,6 @@ static float servo_up_position_degrees = 60.0f;
 static float servo_down_position_degrees = -60.0f;
 
 /**
- * @brief Commands an arbitrary servo angle.
- * @param angle_degrees Requested angle in degrees.
- *
- * The angle is clamped to the supported range before being converted to
- * a PWM pulse width.
- */
-static void ServoSystem_SetPosition(float angle_degrees);
-
-/**
  * @brief Initializes the PWM interface and centers the servo.
  * @param timer_handle Pointer to the configured PWM timer.
  * @param timer_channel HAL timer channel connected to the servo signal.
@@ -71,7 +62,7 @@ void ServoSystem_Down(void)
  * @brief Converts a requested angle to a PWM pulse and applies it.
  * @param angle_degrees Requested angle in degrees.
  */
-static void ServoSystem_SetPosition(float angle_degrees)
+void ServoSystem_SetPosition(float angle_degrees)
 {
   if (angle_degrees < SERVO_MIN_DEGREES)
   {
