@@ -11,9 +11,15 @@
 #include "State_Machine.h"
 #include "pressure_system.h"
 #include "Stepper_Motion.h"
+#include "servo_system.h"
 
+
+// Fan Externs
 extern ADC_HandleTypeDef hadc1;
 extern TIM_HandleTypeDef htim3;
+
+//Servo Extern
+extern TIM_HandleTypeDef htim2;
 
 void App_Init(void)
 {
@@ -26,6 +32,7 @@ void App_Init(void)
 
     Mode_Select_Init();
     PressureSystem_Init(&hadc1, &htim3, TIM_CHANNEL_1);
+    ServoSystem_Init(&htim2, TIM_CHANNEL_2);
     State_Machine_Init();
 
     /*

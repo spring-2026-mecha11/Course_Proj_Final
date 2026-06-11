@@ -27,7 +27,7 @@
 
 // Homing Behavior
 
-#define HOME_BACKOFF_STEPS    3000
+#define HOME_BACKOFF_STEPS    5000
 #define HOME_TIMEOUT_MS       15000
 
 static bool stepper_homed = false;

@@ -1,0 +1,5 @@
+../Core/Src/servo_system.c:31:6:ServoSystem_Init	16	static
+../Core/Src/servo_system.c:48:6:ServoSystem_Up	8	static
+../Core/Src/servo_system.c:56:6:ServoSystem_Down	8	static
+../Core/Src/servo_system.c:65:6:ServoSystem_SetPosition	24	static
+../Core/Src/servo_system.c:86:6:ServoSystem_Disable	8	static

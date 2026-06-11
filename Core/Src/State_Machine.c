@@ -12,6 +12,7 @@
 #include "System_Config.h"
 #include "Stepper_Motion.h"
 #include "pressure_system.h"
+#include "servo_system.h"
 
 static SystemState_t system_state = SYS_STATE_BOOT;
 static SystemFlags_t system_flags;
@@ -26,11 +27,17 @@ volatile uint8_t debug_stepper_homed = 0;
 volatile uint8_t debug_fault_active = 0;
 volatile uint8_t debug_error_code = 0;
 
-/*
- * Temporary fake homing result.
- * Later, remove this and call your real Stepper_Home().
- */
-volatile uint8_t debug_fake_home_success = 1;
+volatile uint8_t debug_stepper_cal_enable = 0;
+volatile uint8_t debug_stepper_cal_apply = 0;
+volatile uint8_t debug_stepper_cal_stop = 0;
+
+volatile int32_t debug_stepper_cal_target_steps = 0;
+volatile int32_t debug_stepper_cal_last_commanded_steps = 0;
+volatile int32_t debug_stepper_cal_actual_steps = 0;
+
+volatile uint8_t debug_stepper_cal_status = 0;
+
+
 
 /*
  * Internal helper declarations.
@@ -49,6 +56,8 @@ static void Live_Harmonizer_Enable_Request(bool enable);
 static void Song_Player_Enable_Request(bool enable);
 static void Song_Player_Start_Request(void);
 static bool Song_Player_IsDone_Request(void);
+
+static void Stepper_DebugCal_Task(void);
 
 //External CUBEMX Handles
 
@@ -211,11 +220,14 @@ void State_Machine_Task(uint32_t now_ms)
              * No separate idle-muted top-level state is needed.
              */
             Fan_Enable_Request(true);
+            Servo_SetMuted_Request(true);
 
             Live_Harmonizer_Enable_Request(true);
             Song_Player_Enable_Request(false);
 
             system_flags.active_mode = APP_MODE_LIVE_HARMONIZER;
+
+            Stepper_DebugCal_Test();
 
             /*
              * Future:
@@ -237,6 +249,7 @@ void State_Machine_Task(uint32_t now_ms)
              *      - stepper percent target
              */
             Fan_Enable_Request(true);
+            Servo_SetMuted_Request(true);
 
             Live_Harmonizer_Enable_Request(false);
             Song_Player_Enable_Request(true);
@@ -359,11 +372,14 @@ static void Stepper_Stop_Request(void)
 
 static void Servo_SetMuted_Request(bool muted)
 {
-    /*
-     * Future real code:
-     *
-     * Servo_Mute_SetClosed(muted);
-     */
+	if (muted)
+	    {
+	        ServoSystem_Down();
+	    }
+	    else
+	    {
+	        ServoSystem_Up();
+	    }
 
     system_flags.mute_closed = muted;
 }
@@ -454,4 +470,39 @@ static bool Song_Player_IsDone_Request(void)
      * temporarily change this to return true.
      */
     return false;
+}
+
+
+
+static void Stepper_DebugCal_Task(void)
+{
+    debug_stepper_cal_actual_steps = Stepper_GetPositionSteps();
+
+    if (!debug_stepper_cal_enable)
+    {
+        return;
+    }
+
+    if (debug_stepper_cal_stop)
+    {
+        Stepper_Stop();
+
+        debug_stepper_cal_apply = 0;
+        debug_stepper_cal_stop = 0;
+        debug_stepper_cal_status = 100; // stopped by debug request
+
+        return;
+    }
+
+    if (debug_stepper_cal_apply)
+    {
+        StepperStatus_t status;
+
+        status = Stepper_MoveToAbsSteps(debug_stepper_cal_target_steps);
+
+        debug_stepper_cal_last_commanded_steps = debug_stepper_cal_target_steps;
+        debug_stepper_cal_status = (uint8_t)status;
+
+        debug_stepper_cal_apply = 0;
+    }
 }

@@ -20,8 +20,8 @@ static TIM_HandleTypeDef *servo_timer_handle;
 static uint32_t servo_timer_channel;
 
 /** Mechanical positions used by ServoSystem_Up() and ServoSystem_Down(). */
-static float servo_up_position_degrees = 60.0f;
-static float servo_down_position_degrees = -60.0f;
+volatile float servo_up_position_degrees = 0.0f;
+volatile float servo_down_position_degrees = -40.0f;
 
 /**
  * @brief Initializes the PWM interface and centers the servo.
@@ -34,7 +34,7 @@ void ServoSystem_Init(TIM_HandleTypeDef *timer_handle,
   servo_timer_handle = timer_handle;
   servo_timer_channel = timer_channel;
 
-  ServoSystem_SetPosition(0.0f);
+  ServoSystem_Down();
 
   if (HAL_TIM_PWM_Start(servo_timer_handle, servo_timer_channel) != HAL_OK)
   {
