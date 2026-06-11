@@ -1,0 +1,14 @@
+../Core/Src/State_Machine.c:56:6:State_Machine_Init	8	static
+../Core/Src/State_Machine.c:69:6:State_Machine_Task	24	static
+../Core/Src/State_Machine.c:286:15:State_Machine_GetState	4	static
+../Core/Src/State_Machine.c:291:16:State_Machine_GetFlags	4	static
+../Core/Src/State_Machine.c:296:13:State_Machine_ClearFlags	4	static
+../Core/Src/State_Machine.c:332:13:Hardware_Init_Request	8	static
+../Core/Src/State_Machine.c:342:13:Stepper_Home_Request	16	static
+../Core/Src/State_Machine.c:354:13:Stepper_Stop_Request	8	static
+../Core/Src/State_Machine.c:360:13:Servo_SetMuted_Request	16	static
+../Core/Src/State_Machine.c:371:13:Fan_Enable_Request	24	static
+../Core/Src/State_Machine.c:402:13:Live_Harmonizer_Enable_Request	16	static
+../Core/Src/State_Machine.c:413:13:Song_Player_Enable_Request	16	static
+../Core/Src/State_Machine.c:429:13:Song_Player_Start_Request	4	static
+../Core/Src/State_Machine.c:441:13:Song_Player_IsDone_Request	4	static

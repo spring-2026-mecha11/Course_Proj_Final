@@ -1,0 +1,63 @@
+/*
+ * App.c
+ *
+ *  Created on: Jun 10, 2026
+ *      Author: dreed
+ */
+
+#include "App.h"
+
+#include "Mode_Select.h"
+#include "State_Machine.h"
+#include "pressure_system.h"
+#include "Stepper_Motion.h"
+
+extern ADC_HandleTypeDef hadc1;
+extern TIM_HandleTypeDef htim3;
+
+void App_Init(void)
+{
+    /*
+     * Initialize high-level software modules here.
+     *
+     * CubeMX already initializes GPIO, SPI, I2C, timers, clocks, etc.
+     * Do not reconfigure hardware here.
+     */
+
+    Mode_Select_Init();
+    PressureSystem_Init(&hadc1, &htim3, TIM_CHANNEL_1);
+    State_Machine_Init();
+
+    /*
+     * Future module init calls:
+     *
+     * Servo_Mute_Init();
+     * Fan_Control_Init();
+     * Audio_Input_Init();
+     * Live_Harmonizer_Init();
+     * Song_Player_Init();
+     */
+}
+
+void App_Task(void)
+{
+    uint32_t now_ms = HAL_GetTick();
+
+    /*
+     * These should all be non-blocking task functions.
+     */
+
+    Mode_Select_Task(now_ms);
+
+    /*
+     * Future subsystem task calls:
+     *
+     * Audio_Input_Task(now_ms);
+     * Fan_Control_Task(now_ms);
+     * Servo_Mute_Task(now_ms);
+     * Live_Harmonizer_Task(now_ms);
+     * Song_Player_Task(now_ms);
+     */
+    PressureSystem_Update();
+    State_Machine_Task(now_ms);
+}

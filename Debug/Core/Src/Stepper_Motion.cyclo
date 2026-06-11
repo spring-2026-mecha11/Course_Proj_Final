@@ -1,0 +1,14 @@
+../Core/Src/Stepper_Motion.c:46:13:Stepper_HomeSwitchTriggered	1
+../Core/Src/Stepper_Motion.c:60:16:Stepper_ClampSteps	3
+../Core/Src/Stepper_Motion.c:76:6:Stepper_Init	1
+../Core/Src/Stepper_Motion.c:93:6:Stepper_ApplySafeProfile	1
+../Core/Src/Stepper_Motion.c:107:6:Stepper_ApplyNormalProfile	1
+../Core/Src/Stepper_Motion.c:120:9:Stepper_GetPositionSteps	1
+../Core/Src/Stepper_Motion.c:131:7:Stepper_GetPositionPercent	3
+../Core/Src/Stepper_Motion.c:154:6:Stepper_IsHomed	1
+../Core/Src/Stepper_Motion.c:160:6:Stepper_ForceHomedForTesting	1
+../Core/Src/Stepper_Motion.c:167:6:Stepper_Stop	1
+../Core/Src/Stepper_Motion.c:176:17:Stepper_Home	5
+../Core/Src/Stepper_Motion.c:253:17:Stepper_MoveToAbsSteps	2
+../Core/Src/Stepper_Motion.c:271:17:Stepper_MoveToRelSteps	1
+../Core/Src/Stepper_Motion.c:279:17:Stepper_MoveToPercent	4

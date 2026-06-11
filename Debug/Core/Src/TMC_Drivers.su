@@ -1,0 +1,10 @@
+../Core/Src/TMC_Drivers.c:17:6:TMC_ENN	8	static
+../Core/Src/TMC_Drivers.c:24:6:TMC_DIS	8	static
+../Core/Src/TMC_Drivers.c:31:6:TMC_Select	8	static
+../Core/Src/TMC_Drivers.c:38:6:TMC_Deselect	8	static
+../Core/Src/TMC_Drivers.c:43:9:TMC_Transfer40	48	static
+../Core/Src/TMC_Drivers.c:87:6:TMC_Write_Reg	24	static
+../Core/Src/TMC_Drivers.c:94:10:TMC_Read_Reg	24	static
+../Core/Src/TMC_Drivers.c:109:14:TMC_Default_Config	72	static
+../Core/Src/TMC_Drivers.c:136:6:TMC_Init_With_Config	24	static
+../Core/Src/TMC_Drivers.c:173:6:TMC_Basic_Init	56	static

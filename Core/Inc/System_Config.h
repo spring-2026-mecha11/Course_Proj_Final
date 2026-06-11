@@ -1,0 +1,49 @@
+/*
+ * System_Config.h
+ *
+ *  Created on: Jun 10, 2026
+ *      Author: dreed
+ */
+
+#ifndef INC_SYSTEM_CONFIG_H_
+#define INC_SYSTEM_CONFIG_H_
+
+#include "App_types.h"
+
+/*
+ * Mode input values.
+ */
+#define MODE_INPUT_NONE              0u
+#define MODE_INPUT_LIVE_HARMONIZER   1u
+#define MODE_INPUT_SONG_PLAYER       2u
+
+/*
+ * Mode select behavior.
+ */
+#define MODE_SELECT_TIMEOUT_MS       10000u
+#define MODE_SELECT_DEFAULT_MODE     APP_MODE_LIVE_HARMONIZER
+
+/*
+ * Future button behavior.
+ */
+#define BUTTON_DEBOUNCE_MS           30u
+#define BUTTON_MULTI_PRESS_GAP_MS    600u
+#define BUTTON_MODE_SELECT_WINDOW_MS 2000u
+
+/*
+ * Live harmonizer timing.
+ */
+#define LIVE_CONTROL_PERIOD_MS       10u
+#define LIVE_STEPPER_DEADBAND_PCT    0.25f
+
+/*
+ * Song player timing.
+ */
+#define SONG_PLAYER_TASK_PERIOD_MS   5u
+
+
+// Set Pressure
+#define LIVE_PRESSURE_TARGET_KPA   0.15f
+#define SONG_PRESSURE_TARGET_KPA   0.15f
+
+#endif /* INC_SYSTEM_CONFIG_H_ */
