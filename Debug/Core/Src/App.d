@@ -38,7 +38,8 @@ Core/Src/App.o: ../Core/Src/App.c ../Core/Inc/App.h ../Core/Inc/main.h \
  ../Core/Inc/Mode_Select.h ../Core/Inc/app_types.h \
  ../Core/Inc/State_Machine.h ../Core/Inc/App_types.h \
  ../Core/Inc/pressure_system.h ../Core/Inc/Stepper_Motion.h \
- ../Core/Inc/servo_system.h ../Core/Inc/audio_system.h
+ ../Core/Inc/servo_system.h ../Core/Inc/audio_system.h \
+ ../Core/Inc/live_harmonizer.h
 ../Core/Inc/App.h:
 ../Core/Inc/main.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
@@ -85,3 +86,4 @@ Core/Src/App.o: ../Core/Src/App.c ../Core/Inc/App.h ../Core/Inc/main.h \
 ../Core/Inc/Stepper_Motion.h:
 ../Core/Inc/servo_system.h:
 ../Core/Inc/audio_system.h:
+../Core/Inc/live_harmonizer.h:

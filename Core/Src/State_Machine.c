@@ -19,6 +19,10 @@
 static SystemState_t system_state = SYS_STATE_BOOT;
 static SystemFlags_t system_flags;
 
+#define LIVE_TARGET_LOST_MUTE_DELAY_MS  200u
+
+static uint32_t live_last_target_valid_ms = 0;
+
 
 /*
  * Debug/watch variables.
@@ -183,6 +187,9 @@ void State_Machine_Task(uint32_t now_ms)
 
                 if (requested_mode == APP_MODE_LIVE_HARMONIZER)
                 {
+                    LiveHarmonizer_Reset();
+                    live_last_target_valid_ms = now_ms;
+
                     system_flags.active_mode = APP_MODE_LIVE_HARMONIZER;
                     system_state = SYS_STATE_LIVE_HARMONIZER;
                 }
@@ -245,13 +252,17 @@ void State_Machine_Task(uint32_t now_ms)
 
             if (AudioSystem_TargetValid())
             {
+                live_last_target_valid_ms = now_ms;
                 Servo_SetMuted_Request(false);
             }
             else
             {
-                Servo_SetMuted_Request(true);
-                Stepper_Stop_Request();
-                LiveHarmonizer_Reset();
+                if ((now_ms - live_last_target_valid_ms) >= LIVE_TARGET_LOST_MUTE_DELAY_MS)
+                {
+                    Servo_SetMuted_Request(true);
+                    Stepper_Stop_Request();
+
+                }
             }
 
             Live_Harmonizer_Enable_Request(true);

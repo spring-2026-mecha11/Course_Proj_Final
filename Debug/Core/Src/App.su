@@ -1,2 +1,2 @@
-../Core/Src/App.c:27:6:App_Init	8	static
-../Core/Src/App.c:53:6:App_Task	16	static
+../Core/Src/App.c:28:6:App_Init	8	static
+../Core/Src/App.c:55:6:App_Task	16	static
