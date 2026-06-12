@@ -21,7 +21,7 @@ static uint32_t servo_timer_channel;
 
 /** Mechanical positions used by ServoSystem_Up() and ServoSystem_Down(). */
 volatile float servo_up_position_degrees = 0.0f;
-volatile float servo_down_position_degrees = -40.0f;
+volatile float servo_down_position_degrees = -39.0f;
 
 /**
  * @brief Initializes the PWM interface and centers the servo.

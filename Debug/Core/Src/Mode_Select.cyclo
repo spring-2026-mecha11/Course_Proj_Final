@@ -1,5 +1,8 @@
-../Core/Src/Mode_Select.c:13:6:Mode_Select_Init	1
-../Core/Src/Mode_Select.c:19:6:Mode_Select_Task	1
-../Core/Src/Mode_Select.c:47:6:Mode_Select_HasSelection	1
-../Core/Src/Mode_Select.c:52:11:Mode_Select_GetSelectedMode	1
-../Core/Src/Mode_Select.c:57:6:Mode_Select_Reset	1
+../Core/Src/Mode_Select.c:40:13:Mode_Select_ReadButtonPressed	2
+../Core/Src/Mode_Select.c:57:6:Mode_Select_Init	1
+../Core/Src/Mode_Select.c:80:6:Mode_Select_SetModeActive	2
+../Core/Src/Mode_Select.c:87:6:Mode_Select_ConsumeExitRequest	2
+../Core/Src/Mode_Select.c:101:6:Mode_Select_Task	14
+../Core/Src/Mode_Select.c:203:6:Mode_Select_HasSelection	1
+../Core/Src/Mode_Select.c:209:11:Mode_Select_GetSelectedMode	1
+../Core/Src/Mode_Select.c:215:6:Mode_Select_Reset	1

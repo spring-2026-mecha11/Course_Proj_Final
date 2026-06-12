@@ -33,13 +33,13 @@ Core/Src/State_Machine.o: ../Core/Src/State_Machine.c \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h \
- ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usb.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd_ex.h \
  ../Core/Inc/App_types.h ../Core/Inc/Mode_Select.h \
- ../Core/Inc/System_Config.h ../Core/Inc/Stepper_Motion.h \
- ../Core/Inc/pressure_system.h ../Core/Inc/servo_system.h
+ ../Core/Inc/app_types.h ../Core/Inc/System_Config.h \
+ ../Core/Inc/Stepper_Motion.h ../Core/Inc/pressure_system.h \
+ ../Core/Inc/servo_system.h ../Core/Inc/audio_system.h
 ../Core/Inc/State_Machine.h:
 ../Core/Inc/main.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
@@ -75,13 +75,14 @@ Core/Src/State_Machine.o: ../Core/Src/State_Machine.c \
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h:
-../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usb.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd_ex.h:
 ../Core/Inc/App_types.h:
 ../Core/Inc/Mode_Select.h:
+../Core/Inc/app_types.h:
 ../Core/Inc/System_Config.h:
 ../Core/Inc/Stepper_Motion.h:
 ../Core/Inc/pressure_system.h:
 ../Core/Inc/servo_system.h:
+../Core/Inc/audio_system.h:

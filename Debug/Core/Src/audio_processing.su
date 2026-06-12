@@ -1,0 +1,4 @@
+../Core/Src/audio_processing.c:8:6:AudioProcessing_InitDetector	24	static
+../Core/Src/audio_processing.c:18:16:remove_dc_and_get_energy	120	static
+../Core/Src/audio_processing.c:41:17:detect_pitch_yin	1840	static
+../Core/Src/audio_processing.c:199:5:AudioProcessing_AddBlock	32	static

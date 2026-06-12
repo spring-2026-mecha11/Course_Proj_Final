@@ -13,6 +13,7 @@
 #include "Stepper_Motion.h"
 #include "pressure_system.h"
 #include "servo_system.h"
+#include "audio_system.h"
 
 static SystemState_t system_state = SYS_STATE_BOOT;
 static SystemFlags_t system_flags;
@@ -163,7 +164,7 @@ void State_Machine_Task(uint32_t now_ms)
              *
              * Fan pressure control starts only after a valid mode is selected.
              */
-
+        	Mode_Select_SetModeActive(false);
             Servo_SetMuted_Request(true);
             Fan_Enable_Request(false);
 
@@ -216,8 +217,38 @@ void State_Machine_Task(uint32_t now_ms)
              *
              * No separate idle-muted top-level state is needed.
              */
+        	Mode_Select_SetModeActive(true);
+
+        	if (Mode_Select_ConsumeExitRequest())
+        	{
+        	    Servo_SetMuted_Request(true);
+        	    Stepper_Stop_Request();
+        	    Fan_Enable_Request(false);
+
+        	    Live_Harmonizer_Enable_Request(false);
+        	    Song_Player_Enable_Request(false);
+
+        	    Mode_Select_Reset();
+
+        	    system_flags.active_mode = APP_MODE_NONE;
+        	    system_flags.mode_selected = false;
+        	    system_flags.requested_mode = APP_MODE_NONE;
+
+        	    system_state = SYS_STATE_MODE_SELECT;
+        	    break;
+        	}
+
             Fan_Enable_Request(true);
-            Servo_SetMuted_Request(true);
+
+            if (AudioSystem_TargetValid())
+            {
+                Servo_SetMuted_Request(false);
+            }
+            else
+            {
+                Servo_SetMuted_Request(true);
+                Stepper_Stop_Request();
+            }
 
             Live_Harmonizer_Enable_Request(true);
             Song_Player_Enable_Request(false);
@@ -245,6 +276,31 @@ void State_Machine_Task(uint32_t now_ms)
              *      - servo for notes/rests
              *      - stepper percent target
              */
+
+        	Mode_Select_SetModeActive(true);
+
+        	if (Mode_Select_ConsumeExitRequest())
+        	{
+        	    Servo_SetMuted_Request(true);
+        	    Stepper_Stop_Request();
+        	    Fan_Enable_Request(false);
+
+        	    Live_Harmonizer_Enable_Request(false);
+        	    Song_Player_Enable_Request(false);
+
+        	    Mode_Select_Reset();
+
+        	    system_flags.song_playing = false;
+        	    system_flags.song_done = false;
+        	    system_flags.active_mode = APP_MODE_NONE;
+        	    system_flags.mode_selected = false;
+        	    system_flags.requested_mode = APP_MODE_NONE;
+
+        	    system_state = SYS_STATE_MODE_SELECT;
+        	    break;
+        	}
+
+
             Fan_Enable_Request(true);
             Servo_SetMuted_Request(true);
 
