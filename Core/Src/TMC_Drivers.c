@@ -176,4 +176,40 @@ void TMC_Basic_Init(void)
     TMC_Init_With_Config(&config);
 }
 
+void TMC_Set_GlobalScaler(uint8_t global_scaler)
+{
+    if (global_scaler == 0)
+    {
+        global_scaler = 1;
+    }
 
+    TMC_Write_Reg(TMC5240_GLOBALSCALER, global_scaler);
+}
+
+
+void TMC_Set_Current(uint8_t ihold, uint8_t irun, uint8_t ihold_delay)
+{
+    uint32_t ihold_irun;
+
+    if (ihold > 31)
+    {
+        ihold = 31;
+    }
+
+    if (irun > 31)
+    {
+        irun = 31;
+    }
+
+    if (ihold_delay > 15)
+    {
+        ihold_delay = 15;
+    }
+
+    ihold_irun =
+        ((uint32_t)(ihold & 0x1F)) |
+        ((uint32_t)(irun & 0x1F) << 8) |
+        ((uint32_t)(ihold_delay & 0x0F) << 16);
+
+    TMC_Write_Reg(TMC5240_IHOLD_IRUN, ihold_irun);
+}

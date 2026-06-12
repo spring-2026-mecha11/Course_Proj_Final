@@ -27,17 +27,15 @@ volatile uint8_t debug_stepper_homed = 0;
 volatile uint8_t debug_fault_active = 0;
 volatile uint8_t debug_error_code = 0;
 
-volatile uint8_t debug_stepper_cal_enable = 0;
-volatile uint8_t debug_stepper_cal_apply = 0;
-volatile uint8_t debug_stepper_cal_stop = 0;
 
-volatile int32_t debug_stepper_cal_target_steps = 0;
-volatile int32_t debug_stepper_cal_last_commanded_steps = 0;
-volatile int32_t debug_stepper_cal_actual_steps = 0;
+volatile uint8_t debug_stepper_percent_enable = 0;
+volatile uint8_t debug_stepper_percent_apply = 0;
+volatile uint8_t debug_stepper_percent_stop = 0;
 
-volatile uint8_t debug_stepper_cal_status = 0;
+volatile float debug_stepper_percent_target = 0.0f;
+volatile float debug_stepper_percent_actual = 0.0f;
 
-
+volatile uint8_t debug_stepper_percent_status = 0;
 
 /*
  * Internal helper declarations.
@@ -57,8 +55,7 @@ static void Song_Player_Enable_Request(bool enable);
 static void Song_Player_Start_Request(void);
 static bool Song_Player_IsDone_Request(void);
 
-static void Stepper_DebugCal_Task(void);
-
+static void Stepper_DebugPercent_Task(void);
 //External CUBEMX Handles
 
 
@@ -227,7 +224,7 @@ void State_Machine_Task(uint32_t now_ms)
 
             system_flags.active_mode = APP_MODE_LIVE_HARMONIZER;
 
-            Stepper_DebugCal_Test();
+            Stepper_DebugPercent_Task();;
 
             /*
              * Future:
@@ -474,35 +471,46 @@ static bool Song_Player_IsDone_Request(void)
 
 
 
-static void Stepper_DebugCal_Task(void)
+static void Stepper_DebugPercent_Task(void)
 {
-    debug_stepper_cal_actual_steps = Stepper_GetPositionSteps();
+    debug_stepper_percent_actual = Stepper_GetPositionPercent();
 
-    if (!debug_stepper_cal_enable)
+    if (!debug_stepper_percent_enable)
     {
         return;
     }
 
-    if (debug_stepper_cal_stop)
+    if (debug_stepper_percent_stop)
     {
         Stepper_Stop();
 
-        debug_stepper_cal_apply = 0;
-        debug_stepper_cal_stop = 0;
-        debug_stepper_cal_status = 100; // stopped by debug request
+        debug_stepper_percent_apply = 0;
+        debug_stepper_percent_stop = 0;
+        debug_stepper_percent_status = 100;
 
         return;
     }
 
-    if (debug_stepper_cal_apply)
+    if (debug_stepper_percent_apply)
     {
         StepperStatus_t status;
+        float target_percent = debug_stepper_percent_target;
 
-        status = Stepper_MoveToAbsSteps(debug_stepper_cal_target_steps);
+        if (target_percent < 0.0f)
+        {
+            target_percent = 0.0f;
+        }
 
-        debug_stepper_cal_last_commanded_steps = debug_stepper_cal_target_steps;
-        debug_stepper_cal_status = (uint8_t)status;
+        if (target_percent > 100.0f)
+        {
+            target_percent = 100.0f;
+        }
 
-        debug_stepper_cal_apply = 0;
+        status = Stepper_MoveToPercent(target_percent);
+
+        debug_stepper_percent_target = target_percent;
+        debug_stepper_percent_status = (uint8_t)status;
+
+        debug_stepper_percent_apply = 0;
     }
 }

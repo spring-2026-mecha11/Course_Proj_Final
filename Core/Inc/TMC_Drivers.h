@@ -54,4 +54,7 @@ TMC_Config_t TMC_Default_Config(void); //Sets up generic configuration for init
 void TMC_Init_With_Config(const TMC_Config_t *config); //
 void TMC_Basic_Init(void);
 
+void TMC_Set_Current(uint8_t ihold, uint8_t irun, uint8_t ihold_delay);
+void TMC_Set_GlobalScaler(uint8_t global_scaler);
+
 #endif /* INC_TMC_DRIVERS_H_ */

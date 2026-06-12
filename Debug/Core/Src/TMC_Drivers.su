@@ -8,3 +8,5 @@
 ../Core/Src/TMC_Drivers.c:109:14:TMC_Default_Config	72	static
 ../Core/Src/TMC_Drivers.c:136:6:TMC_Init_With_Config	24	static
 ../Core/Src/TMC_Drivers.c:173:6:TMC_Basic_Init	56	static
+../Core/Src/TMC_Drivers.c:179:6:TMC_Set_GlobalScaler	16	static
+../Core/Src/TMC_Drivers.c:190:6:TMC_Set_Current	24	static

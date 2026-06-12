@@ -22,13 +22,25 @@
 #define HOME_SWITCH_USES_REFL	1
 
 
-//Defining Total Travel Range (Must Be Calibrated!!)
-#define STEPPER_RANGE_STEPS 512000 // 512000 = appx 10 rev
+//Defining Total Travel Range
+#define STEPPER_RANGE_STEPS 270000
 
 // Homing Behavior
 
 #define HOME_BACKOFF_STEPS    5000
-#define HOME_TIMEOUT_MS       15000
+#define HOME_TIMEOUT_MS       20000
+
+
+//Current Limiting For percent normal and percent moves
+#define STEPPER_NORMAL_GLOBALSCALER   128
+#define STEPPER_NORMAL_IHOLD          20
+#define STEPPER_NORMAL_IRUN           20
+#define STEPPER_NORMAL_IHOLD_DELAY    6
+
+#define STEPPER_PERCENT_GLOBALSCALER  160
+#define STEPPER_PERCENT_IHOLD         16
+#define STEPPER_PERCENT_IRUN          24
+#define STEPPER_PERCENT_IHOLD_DELAY   6
 
 static bool stepper_homed = false;
 
@@ -72,11 +84,27 @@ static int32_t Stepper_ClampSteps(int32_t target_steps)
 	return target_steps;
 }
 
+static void Stepper_ApplyNormalCurrent(void)
+{
+    TMC_Set_GlobalScaler(STEPPER_NORMAL_GLOBALSCALER);
+    TMC_Set_Current(STEPPER_NORMAL_IHOLD,
+                    STEPPER_NORMAL_IRUN,
+                    STEPPER_NORMAL_IHOLD_DELAY);
+}
+
+
+static void Stepper_ApplyPercentCurrent(void)
+{
+    TMC_Set_GlobalScaler(STEPPER_PERCENT_GLOBALSCALER);
+    TMC_Set_Current(STEPPER_PERCENT_IHOLD,
+                    STEPPER_PERCENT_IRUN,
+                    STEPPER_PERCENT_IHOLD_DELAY);
+}
 
 void Stepper_Init(void)
 {
 	TMC_Basic_Init();
-
+	Stepper_ApplyNormalCurrent();
 	stepper_homed = false;
 
 	stepper_min_steps = 0;
@@ -106,15 +134,15 @@ void Stepper_ApplySafeProfile(void)
 
 void Stepper_ApplyNormalProfile(void)
 {
-	TMC_Write_Reg(TMC5240_VSTART, 1);
-	TMC_Write_Reg(TMC5240_A1, 2000);
-	TMC_Write_Reg(TMC5240_V1, 10000);
-	TMC_Write_Reg(TMC5240_AMAX, 2000);
-	TMC_Write_Reg(TMC5240_VMAX, 50000);
-	TMC_Write_Reg(TMC5240_DMAX, 2000);
-	TMC_Write_Reg(TMC5240_D1, 2000);
-	TMC_Write_Reg(TMC5240_VSTOP, 10);
-	TMC_Write_Reg(TMC5240_TZEROWAIT, 0);
+    TMC_Write_Reg(TMC5240_VSTART, 1);
+    TMC_Write_Reg(TMC5240_A1, 6000);
+    TMC_Write_Reg(TMC5240_V1, 30000);
+    TMC_Write_Reg(TMC5240_AMAX, 6000);
+    TMC_Write_Reg(TMC5240_VMAX, 150000);
+    TMC_Write_Reg(TMC5240_DMAX, 6000);
+    TMC_Write_Reg(TMC5240_D1, 6000);
+    TMC_Write_Reg(TMC5240_VSTOP, 10);
+    TMC_Write_Reg(TMC5240_TZEROWAIT, 0);
 }
 
 int32_t Stepper_GetPositionSteps(void)
@@ -166,6 +194,7 @@ void Stepper_ForceHomedForTesting(bool homed)
 
 void Stepper_Stop(void)
 {
+	Stepper_ApplyNormalCurrent();
     int32_t current_steps = Stepper_GetPositionSteps();
 
     TMC_Write_Reg(TMC5240_RAMPMODE, TMC_RAMPMODE_POSITION);
@@ -180,7 +209,7 @@ StepperStatus_t Stepper_Home(void)
 
 	stepper_homed = false;
 	stepper_debug_homed = 0;
-
+	Stepper_ApplyNormalCurrent();
 	Stepper_ApplySafeProfile();
 
 	// Set Limit Switch as Active Low
@@ -259,6 +288,7 @@ StepperStatus_t Stepper_MoveToAbsSteps(int32_t target_steps)
 
     target_steps = Stepper_ClampSteps(target_steps);
 
+    Stepper_ApplyNormalCurrent();
     Stepper_ApplySafeProfile();
 
     TMC_Write_Reg(TMC5240_RAMPMODE, TMC_RAMPMODE_POSITION);
@@ -306,6 +336,7 @@ StepperStatus_t Stepper_MoveToPercent(float percent)
 
     target_steps = Stepper_ClampSteps(target_steps);
 
+    Stepper_ApplyPercentCurrent();
     Stepper_ApplyNormalProfile();
 
     TMC_Write_Reg(TMC5240_RAMPMODE, TMC_RAMPMODE_POSITION);
