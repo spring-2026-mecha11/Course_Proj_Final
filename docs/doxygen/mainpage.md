@@ -17,6 +17,8 @@ In harmonization mode, an outer feedback loop compares the pitches measured
 by the two microphones and uses the resulting error to adjust the
 harmonization whistle's pitch with the stepper motor.
 
+**Project Repository:** [spring-2026-mecha11/Course_Proj_Final](https://github.com/spring-2026-mecha11/Course_Proj_Final)
+
 ### Completed Assembly
 
 @image html completed-assembly.png "Completed Auto Playing Slide Whistle assembly" width=900px
@@ -24,6 +26,16 @@ harmonization whistle's pitch with the stepper motor.
 The completed assembly includes the two slide whistles, stepper-driven
 carriage, blower and airflow system, servo mute, custom electronics, and
 handheld frame.
+
+**Functionality Demonstration Video**
+
+@htmlonly
+<p>
+  <a href="https://www.youtube.com/watch?v=-pB6aUwd55Q" target="_blank" rel="noopener noreferrer">
+    Click Here for Youtube Video
+  </a>
+</p>
+@endhtmlonly
 
 ## Hardware Design
 
@@ -419,13 +431,3 @@ player in addition to proper noise isolation between the two microphones. With a
 **Completed Audio Breakout Board**
 
 @image html audio-board-photo.png "Completed audio breakout board" width=650px
-
-**Functionality Demonstration Video**
-
-@htmlonly
-<p>
-  <a href="https://www.youtube.com/watch?v=-pB6aUwd55Q" target="_blank" rel="noopener noreferrer">
-    Click Here for Youtube Video
-  </a>
-</p>
-@endhtmlonly
