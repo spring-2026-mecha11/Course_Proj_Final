@@ -27,10 +27,19 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Install Doxygen and Graphviz
+      - name: Install Graphviz
         run: |
           sudo apt-get update
-          sudo apt-get install --yes doxygen graphviz
+          sudo apt-get install --yes graphviz
+
+      - name: Install Doxygen 1.17.0
+        run: |
+          curl --fail --location --silent --show-error \
+            --output /tmp/doxygen.tar.gz \
+            https://github.com/doxygen/doxygen/releases/download/Release_1_17_0/doxygen-1.17.0.linux.bin.tar.gz
+          tar --extract --gzip --file /tmp/doxygen.tar.gz --directory /tmp
+          sudo install /tmp/doxygen-1.17.0/bin/doxygen /usr/local/bin/doxygen
+          test "$(doxygen --version)" = "1.17.0"
 
       - name: Build documentation
         run: doxygen Doxyfile
