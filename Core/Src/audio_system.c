@@ -67,6 +67,10 @@ volatile uint16_t debug_audio_dma_3 = 0;
 volatile int16_t debug_audio_left_raw = 0;
 volatile int16_t debug_audio_right_raw = 0;
 
+/**
+ * @brief Reconstructs one DMA half-buffer into left and right sample arrays.
+ * @param offset_halfwords Start index of the DMA half-buffer to process.
+ */
 static void AudioSystem_ReconstructStereoSamples(uint32_t offset_halfwords)
 {
     uint32_t in = offset_halfwords;
@@ -92,6 +96,10 @@ static void AudioSystem_ReconstructStereoSamples(uint32_t offset_halfwords)
 }
 
 
+/**
+ * @brief Runs pitch detection on one reconstructed stereo audio block.
+ * @param offset_halfwords Start index of the DMA half-buffer to process.
+ */
 static void AudioSystem_ProcessAudio(uint32_t offset_halfwords)
 {
     PitchResult_t target_result = {0};
@@ -286,6 +294,10 @@ int64_t AudioSystem_GetMeasuredEnergy(void)
  * HAL I2S callbacks are defined here so only this module owns audio DMA
  * completion events.
  */
+/**
+ * @brief Marks the first half of the I2S DMA buffer ready for processing.
+ * @param hi2s I2S handle supplied by HAL.
+ */
 void HAL_I2S_RxHalfCpltCallback(I2S_HandleTypeDef *hi2s)
 {
     if (hi2s == audio_i2s_handle)
@@ -295,6 +307,10 @@ void HAL_I2S_RxHalfCpltCallback(I2S_HandleTypeDef *hi2s)
 }
 
 
+/**
+ * @brief Marks the second half of the I2S DMA buffer ready for processing.
+ * @param hi2s I2S handle supplied by HAL.
+ */
 void HAL_I2S_RxCpltCallback(I2S_HandleTypeDef *hi2s)
 {
     if (hi2s == audio_i2s_handle)

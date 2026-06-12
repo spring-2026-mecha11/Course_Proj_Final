@@ -81,6 +81,11 @@ static bool Stepper_HomeSwitchTriggered(void)
 }
 
 
+/**
+ * @brief Clamps an absolute step target to the calibrated travel limits.
+ * @param target_steps Requested target in TMC5240 position counts.
+ * @return Clamped target in position counts.
+ */
 static int32_t Stepper_ClampSteps(int32_t target_steps)
 {
 	if (target_steps < stepper_min_steps)
@@ -96,6 +101,9 @@ static int32_t Stepper_ClampSteps(int32_t target_steps)
 	return target_steps;
 }
 
+/**
+ * @brief Applies conservative current settings used for setup and stopping.
+ */
 static void Stepper_ApplyNormalCurrent(void)
 {
     TMC_Set_GlobalScaler(STEPPER_NORMAL_GLOBALSCALER);
@@ -105,6 +113,9 @@ static void Stepper_ApplyNormalCurrent(void)
 }
 
 
+/**
+ * @brief Applies higher run current used for active percent-position moves.
+ */
 static void Stepper_ApplyPercentCurrent(void)
 {
     TMC_Set_GlobalScaler(STEPPER_PERCENT_GLOBALSCALER);

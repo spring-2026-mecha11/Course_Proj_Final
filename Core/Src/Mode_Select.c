@@ -40,6 +40,10 @@ static uint32_t first_click_ms = 0;
 static uint8_t pending_click_count = 0;
 
 
+/**
+ * @brief Reads the active-low mode button and updates the raw debug value.
+ * @return true when the button is physically pressed.
+ */
 static bool Mode_Select_ReadButtonPressed(void)
 {
     GPIO_PinState pin_state;

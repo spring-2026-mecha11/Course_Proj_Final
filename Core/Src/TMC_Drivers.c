@@ -1,8 +1,10 @@
-/*
- * TMC_Drivers.c
+/**
+ * @file TMC_Drivers.c
+ * @brief Low-level TMC5240 register access over SPI3.
  *
- *  Created on: Jun 9, 2026
- *      Author: dreed
+ * This driver intentionally stays close to the TMC5240 data sheet. It handles
+ * enable and chip-select GPIOs, performs the 40-bit SPI transfers required by
+ * the driver, and exposes small helpers for current and ramp configuration.
  */
 
 
@@ -12,28 +14,20 @@
 extern SPI_HandleTypeDef hspi3;
 #define TMC_SPI_HANDLE hspi3
 
-//Enables Stepper Motor Driver by Setting DRV_ENN Pin Low
-
 void TMC_ENN(void)
 {
     HAL_GPIO_WritePin(DRV_ENN_GPIO_Port, DRV_ENN_Pin, GPIO_PIN_RESET);
 }
-
-//Disables Stepper Motor Driver by Setting DRV_ENN Pin High
 
 void TMC_DIS(void)
 {
     HAL_GPIO_WritePin(DRV_ENN_GPIO_Port, DRV_ENN_Pin, GPIO_PIN_SET);
 }
 
-// Enables SPI Transactions by setting CS Pin Low
-
 void TMC_Select(void)
 {
     HAL_GPIO_WritePin(CHIP_SEL_GPIO_Port, CHIP_SEL_Pin, GPIO_PIN_RESET);
 }
-
-// Disables SPI Transactions by setting CS Pin High
 
 void TMC_Deselect(void)
 {

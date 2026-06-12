@@ -410,6 +410,9 @@ static void State_Machine_ClearFlags(void)
  * into lower-level modules.
  */
 
+/**
+ * @brief Runs one-time startup commands after sensor calibration is ready.
+ */
 static void Hardware_Init_Request(void)
 {
 
@@ -420,6 +423,10 @@ static void Hardware_Init_Request(void)
 	 */
 }
 
+/**
+ * @brief Requests stepper homing and converts the driver status to a boolean.
+ * @return true when homing completed successfully.
+ */
 static bool Stepper_Home_Request(void)
 {
     StepperStatus_t status = Stepper_Home();
@@ -432,12 +439,19 @@ static bool Stepper_Home_Request(void)
     return false;
 }
 
+/**
+ * @brief Stops the stepper at its current position.
+ */
 static void Stepper_Stop_Request(void)
 {
     Stepper_Stop();
 }
 
 
+/**
+ * @brief Moves the mute servo and mirrors the requested mute state in flags.
+ * @param muted true to block the whistle outlet.
+ */
 static void Servo_SetMuted_Request(bool muted)
 {
 	if (muted)
@@ -452,6 +466,10 @@ static void Servo_SetMuted_Request(bool muted)
     system_flags.mute_closed = muted;
 }
 
+/**
+ * @brief Enables or disables pressure control for the active mode.
+ * @param enable true to start fan pressure control.
+ */
 static void Fan_Enable_Request(bool enable)
 {
     if (enable)
@@ -483,6 +501,10 @@ static void Fan_Enable_Request(bool enable)
     }
 }
 
+/**
+ * @brief Records whether the live harmonizer mode is enabled.
+ * @param enable true when live harmonizer mode is active.
+ */
 static void Live_Harmonizer_Enable_Request(bool enable)
 {
     /*
@@ -494,6 +516,10 @@ static void Live_Harmonizer_Enable_Request(bool enable)
     system_flags.live_harmonizer_enabled = enable;
 }
 
+/**
+ * @brief Records whether the reserved song-player mode is enabled.
+ * @param enable true when song-player mode is active.
+ */
 static void Song_Player_Enable_Request(bool enable)
 {
     /*
@@ -510,6 +536,9 @@ static void Song_Player_Enable_Request(bool enable)
     }
 }
 
+/**
+ * @brief Marks the reserved song-player mode as started.
+ */
 static void Song_Player_Start_Request(void)
 {
     /*
@@ -522,6 +551,10 @@ static void Song_Player_Start_Request(void)
     system_flags.song_done = false;
 }
 
+/**
+ * @brief Returns whether the reserved song-player mode has completed.
+ * @return true when song playback is marked done.
+ */
 static bool Song_Player_IsDone_Request(void)
 {
     /*
@@ -542,6 +575,9 @@ static bool Song_Player_IsDone_Request(void)
 
 
 
+/**
+ * @brief Optional debugger-controlled task for commanding stepper percent moves.
+ */
 static void Stepper_DebugPercent_Task(void)
 {
     debug_stepper_percent_actual = Stepper_GetPositionPercent();

@@ -24,6 +24,12 @@ void AudioProcessing_InitDetector(PitchDetector_t *detector)
     }
 }
 
+/**
+ * @brief Removes DC offset and returns mean squared signal energy.
+ * @param samples Input sample window.
+ * @param length Number of samples in the window.
+ * @return Average centered-signal energy.
+ */
 static int64_t remove_dc_and_get_energy(const int32_t *samples,
                                         uint32_t length)
 {
@@ -47,6 +53,12 @@ static int64_t remove_dc_and_get_energy(const int32_t *samples,
     return energy / (int64_t)length;
 }
 
+/**
+ * @brief Estimates pitch from a complete sample window using a YIN-style test.
+ * @param samples Sample window to analyze.
+ * @param length Number of samples in the window.
+ * @return Estimated pitch in hertz, or 0 if no pitch can be estimated.
+ */
 static uint32_t detect_pitch_yin(int32_t *samples, uint32_t length)
 {
     uint32_t min_lag = AUDIO_SAMPLE_RATE_HZ / PITCH_MAX_HZ;
