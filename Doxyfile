@@ -103,7 +103,6 @@ WARN_FORMAT            = "$file:$line: $text"
 WARN_LOGFILE           = docs/doxygen-warnings.log
 
 INPUT                  = docs/doxygen/mainpage.md \
-                         docs/doxygen/test-page.md \
                          Core/Inc \
                          Core/Src
 INPUT_ENCODING         = UTF-8

@@ -151,9 +151,7 @@ actuators, three primary sensors, two control loops, and mechanical design work.
 The final system worked well at the subsystem level, but the main limitation
 was the blower fan. The fan could not generate enough pressure to use the full
 acoustic range of the slide whistle. A human player naturally changes breath
-pressure to stay in the desired harmonic range, but our automated whistle could
-only use roughly the middle portion of the slide travel. Because of this, the
-pitch-matching loop worked when the target note was physically reachable, but
+pressure to stay in the desired harmonic range across the full range of slide travel. But our automated whistle could only maintain sound in the middle portion of the slide travel. Because of this, the pitch-matching loop worked when the target note was playable on the automated whistle, but
 could not fully match a user playing notes outside that range.
 
 ### Challenges and Workarounds
@@ -183,3 +181,6 @@ player. With a wider usable acoustic range, the pitch-matching control loop
 would be much more effective. MIDI support could also be revisited once this limitation is solved.
 
 ### Demonstration and Attachments
+
+-Does the project move and behave properly, as shown in a recorded video?
+-Do you have photographs of the completed board? 
