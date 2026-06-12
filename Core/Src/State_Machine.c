@@ -251,7 +251,6 @@ void State_Machine_Task(uint32_t now_ms)
             {
                 Servo_SetMuted_Request(true);
                 Stepper_Stop_Request();
-                LiveHarmonizer_Reset();
             }
 
             Live_Harmonizer_Enable_Request(true);
