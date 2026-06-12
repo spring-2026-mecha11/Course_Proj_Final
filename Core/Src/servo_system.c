@@ -3,8 +3,8 @@
  * @brief Open-loop RC servo PWM position driver.
  *
  * Servo angles from -60 to +60 degrees are converted to PWM pulses from
- * 900 to 2100 microseconds. The timer must be configured so that one timer
- * count equals one microsecond.
+ * 900 to 2100 microseconds. The state machine uses the named up/down helpers
+ * to open or cover the slide whistle outlet.
  */
 
 #include "servo_system.h"
@@ -25,8 +25,6 @@ volatile float servo_down_position_degrees = -44.0f;
 
 /**
  * @brief Initializes the PWM interface and centers the servo.
- * @param timer_handle Pointer to the configured PWM timer.
- * @param timer_channel HAL timer channel connected to the servo signal.
  */
 void ServoSystem_Init(TIM_HandleTypeDef *timer_handle,
                       uint32_t timer_channel)
@@ -60,7 +58,6 @@ void ServoSystem_Down(void)
 
 /**
  * @brief Converts a requested angle to a PWM pulse and applies it.
- * @param angle_degrees Requested angle in degrees.
  */
 void ServoSystem_SetPosition(float angle_degrees)
 {

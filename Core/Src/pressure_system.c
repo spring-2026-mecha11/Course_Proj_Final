@@ -4,7 +4,9 @@
  *
  * The module waits for sensor settling, measures a zero-pressure baseline,
  * selects a filter strength from baseline noise, and then runs pressure
- * acquisition and PI fan control without blocking.
+ * acquisition and PI fan control without blocking. The public API presents a
+ * target-pressure interface; this file owns ADC sampling, conversion to kPa,
+ * filtering, anti-windup, and the inverted fan PWM output.
  */
 
 #include "pressure_system.h"
@@ -24,6 +26,9 @@
 #define PRESSURE_ZERO_SETTLE_MS   3000U
 #define PRESSURE_ADC_TIMEOUT_MS   5U
 
+/**
+ * @brief Internal pressure acquisition state.
+ */
 typedef enum
 {
   /** Waiting for the pressure sensor output to settle after power-on. */
@@ -36,13 +41,21 @@ typedef enum
   PRESSURE_STATE_RUNNING
 } PressureState;
 
+/** @name Live watch variables: fan output */
+/** @{ */
 volatile uint32_t fan_duty_percent = FAN_PWM_START_DUTY;
 volatile uint32_t fan_pwm_inverted = 1U;
+/** @} */
 
+/** @name Live watch variables: ADC acquisition */
+/** @{ */
 volatile uint32_t pressure_adc_raw = 0U;
 volatile uint32_t pressure_adc_busy = 0U;
 volatile uint32_t pressure_adc_error_count = 0U;
+/** @} */
 
+/** @name Live watch variables: pressure measurement */
+/** @{ */
 volatile float pressure_voltage = 0.0f;
 volatile float pressure_kpa = 0.0f;
 volatile float pressure_uncalibrated_kpa = 0.0f;
@@ -51,7 +64,10 @@ volatile int32_t pressure_milli_kpa = 0;
 
 volatile float pressure_filtered_kpa = 0.0f;
 volatile int32_t pressure_filtered_milli_kpa = 0;
+/** @} */
 
+/** @name Live watch variables: zero calibration */
+/** @{ */
 volatile float pressure_zero_kpa = 0.0f;
 volatile int32_t pressure_zero_milli_kpa = 0;
 volatile uint32_t pressure_zero_adc_raw = 0U;
@@ -62,7 +78,10 @@ volatile float pressure_noise_min_kpa = 0.0f;
 volatile float pressure_noise_max_kpa = 0.0f;
 volatile float pressure_noise_peak_to_peak_kpa = 0.0f;
 volatile int32_t pressure_noise_peak_to_peak_milli_kpa = 0;
+/** @} */
 
+/** @name Live watch variables: PI control */
+/** @{ */
 volatile uint32_t pressure_control_enabled = 0U;
 volatile float pressure_target_kpa = 0.0f;
 volatile float pressure_control_kp = 600.0f;
@@ -76,6 +95,7 @@ volatile float pressure_filter_alpha = 0.20f;
 volatile int32_t pressure_control_direction = 1;
 volatile float pressure_error_kpa = 0.0f;
 volatile int32_t pressure_error_milli_kpa = 0;
+/** @} */
 
 static ADC_HandleTypeDef *pressure_adc;
 static TIM_HandleTypeDef *fan_pwm_timer;

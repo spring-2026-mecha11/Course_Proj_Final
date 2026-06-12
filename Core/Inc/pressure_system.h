@@ -1,6 +1,10 @@
 /**
  * @file pressure_system.h
  * @brief Pressure sensing, fan PWM, and PI pressure control.
+ *
+ * The pressure system starts in a calibration sequence, then provides filtered
+ * pressure readings and a closed-loop fan command for the rest of the
+ * application.
  */
 
 #ifndef PRESSURE_SYSTEM_H
@@ -48,11 +52,22 @@ void PressureSystem_Stop(void);
  */
 void PressureSystem_Update(void);
 
+/** @brief Returns true when startup zero calibration has completed. */
 bool PressureSystem_IsReady(void);
+
+/** @brief Returns true when filtered pressure is close to the target. */
 bool PressureSystem_IsStable(void);
+
+/** @brief Returns true when PI pressure control is enabled. */
 bool PressureSystem_IsEnabled(void);
+
+/** @brief Returns the filtered gauge pressure in kPa. */
 float PressureSystem_GetPressureKpa(void);
+
+/** @brief Returns the active pressure target in kPa. */
 float PressureSystem_GetTargetKpa(void);
+
+/** @brief Returns the logical fan duty command from 0 to 100%. */
 uint32_t PressureSystem_GetFanDutyPercent(void);
 
 
@@ -97,5 +112,8 @@ extern volatile int32_t pressure_control_direction;
 extern volatile float pressure_error_kpa;
 extern volatile int32_t pressure_error_milli_kpa;
 
+/** @} */
+
+/** @} */
 
 #endif

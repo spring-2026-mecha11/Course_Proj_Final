@@ -1,8 +1,11 @@
-/*
- * audio_system.c
+/**
+ * @file audio_system.c
+ * @brief Stereo I2S DMA receiver and pitch-error publisher.
  *
- *  Created on: Jun 11, 2026
- *      Author: dreed
+ * The PCM1802 provides interleaved left/right microphone samples. DMA callbacks
+ * mark half-buffers ready, and the foreground task reconstructs each channel,
+ * runs pitch detection, applies energy thresholds, and publishes the pitch
+ * error used by the live harmonizer.
  */
 
 #include "audio_system.h"
@@ -31,6 +34,7 @@ static volatile uint8_t pitch_error_valid = 0;
 static volatile int64_t target_energy = 0;
 static volatile int64_t measured_energy = 0;
 
+/** @cond INTERNAL_BUFFERS */
 static uint16_t audio_rx_buffer[AUDIO_DMA_HALFWORDS];
 
 static int32_t left_samples[FRAMES_PER_HALF_BUFFER] __attribute__((aligned(32)));
@@ -38,9 +42,10 @@ static int32_t right_samples[FRAMES_PER_HALF_BUFFER] __attribute__((aligned(32))
 
 static PitchDetector_t left_detector __attribute__((aligned(32)));
 static PitchDetector_t right_detector __attribute__((aligned(32)));
+/** @endcond */
 
 /*
- * Debug/watch variables.
+ * Live watch variables for debugger inspection.
  */
 volatile uint32_t debug_audio_target_pitch_hz = 0;
 volatile uint32_t debug_audio_measured_pitch_hz = 0;
@@ -278,8 +283,8 @@ int64_t AudioSystem_GetMeasuredEnergy(void)
 
 
 /*
- * HAL I2S callbacks.
- * Keep these in exactly one source file in the project.
+ * HAL I2S callbacks are defined here so only this module owns audio DMA
+ * completion events.
  */
 void HAL_I2S_RxHalfCpltCallback(I2S_HandleTypeDef *hi2s)
 {

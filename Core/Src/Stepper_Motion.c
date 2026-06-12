@@ -1,37 +1,46 @@
-/*
- * Stepper_Motion.c
+/**
+ * @file Stepper_Motion.c
+ * @brief Slide-position driver built on the TMC5240 register interface.
  *
- *  Created on: Jun 10, 2026
- *      Author: dreed
+ * The stepper subsystem creates a position abstraction for the rest of the
+ * application. It homes against a TMC5240 limit-switch input, defines a fixed
+ * step range for the whistle slide, and supports both raw step commands and
+ * percentage-of-travel commands used by the harmonizer.
  */
 
 #include "Stepper_Motion.h"
 #include "TMC_Drivers.h"
 #include "TMC_Registers.h"
 
-// Ramp mode Values
+/** @name TMC5240 ramp modes */
+/** @{ */
 #define TMC_RAMPMODE_POSITION	   0
 #define TMC_RAMPMODE_VELOCITY_POS  1
 #define TMC_RAMPMODE_VELOCITY_NEG  2
+/** @} */
 
 
-//Ramp Stat Bits for Limit Switch Detection
+/** @name Limit-switch status bits in RAMP_STAT */
+/** @{ */
 #define RAMP_STAT_STOP_L (1UL << 0)
 #define RAMP_STAT_STOP_R (1UL << 1)
+/** @} */
 
 #define HOME_SWITCH_USES_REFL	1
 
 
-//Defining Total Travel Range
+/** Total calibrated slide travel represented in TMC5240 microsteps. */
 #define STEPPER_RANGE_STEPS 270000
 
-// Homing Behavior
-
+/** @name Homing behavior */
+/** @{ */
 #define HOME_BACKOFF_STEPS    5000
 #define HOME_TIMEOUT_MS       20000
+/** @} */
 
 
-//Current Limiting For percent normal and percent moves
+/** @name Current settings for homing and normal motion */
+/** @{ */
 #define STEPPER_NORMAL_GLOBALSCALER   128
 #define STEPPER_NORMAL_IHOLD          20
 #define STEPPER_NORMAL_IRUN           20
@@ -41,6 +50,7 @@
 #define STEPPER_PERCENT_IHOLD         16
 #define STEPPER_PERCENT_IRUN          26
 #define STEPPER_PERCENT_IHOLD_DELAY   6
+/** @} */
 
 static bool stepper_homed = false;
 
@@ -48,11 +58,13 @@ static int32_t stepper_min_steps = 0;
 static int32_t stepper_max_steps = STEPPER_RANGE_STEPS;
 
 
-//Helpful Debug variables
+/** @name Live watch variables */
+/** @{ */
 volatile int32_t stepper_debug_position = 0;
 volatile float stepper_debug_percent = 0.0f;
 volatile uint32_t stepper_debug_ramp_stat = 0;
 volatile uint8_t stepper_debug_homed = 0;
+/** @} */
 
 
 static bool Stepper_HomeSwitchTriggered(void)
@@ -212,9 +224,9 @@ StepperStatus_t Stepper_Home(void)
 	Stepper_ApplyNormalCurrent();
 	Stepper_ApplySafeProfile();
 
-	// Set Limit Switch as Active Low
+	/* Configure the TMC5240 to stop when the active-low home switch trips. */
 	TMC_Write_Reg(TMC5240_SWMODE, 0x00000005);
-	// Move Negative at a slow speed towards limit switch
+	/* Move negative at a slow speed toward the home switch. */
 	TMC_Write_Reg(TMC5240_RAMPMODE, TMC_RAMPMODE_VELOCITY_NEG);
 
 	start_time = HAL_GetTick();
@@ -234,18 +246,16 @@ StepperStatus_t Stepper_Home(void)
 	Stepper_Stop();
 	HAL_Delay(100);
 
-	//Rough zero at first switch contact
+	/* Roughly zero at first switch contact, then back off and re-approach. */
 
 	TMC_Write_Reg(TMC5240_XACTUAL, 0);
-
-	// BACK OFF FROM SWITCH
 
 	TMC_Write_Reg(TMC5240_RAMPMODE, TMC_RAMPMODE_POSITION);
 	TMC_Write_Reg(TMC5240_XTARGET, HOME_BACKOFF_STEPS);
 
 	HAL_Delay(1500);
 
-	//Re-approach zero again for repetition,
+	/* Re-approach the switch to reduce dependence on first-contact bounce. */
 	TMC_Write_Reg(TMC5240_RAMPMODE, TMC_RAMPMODE_VELOCITY_NEG);
 
 	start_time = HAL_GetTick();
@@ -264,7 +274,7 @@ StepperStatus_t Stepper_Home(void)
 	Stepper_Stop();
 	HAL_Delay(100);
 
-	//Setting Final Zero
+	/* Store the final zero reference used for all later position commands. */
 	TMC_Write_Reg(TMC5240_XACTUAL,0);
 	TMC_Write_Reg(TMC5240_XTARGET,0);
 	TMC_Write_Reg(TMC5240_RAMPMODE, TMC_RAMPMODE_POSITION);

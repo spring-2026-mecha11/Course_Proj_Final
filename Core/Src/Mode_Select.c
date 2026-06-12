@@ -1,8 +1,11 @@
-/*
- * Mode_Select.c
+/**
+ * @file Mode_Select.c
+ * @brief Debounced single-button user interface for mode selection.
  *
- *  Created on: Jun 10, 2026
- *      Author: dreed
+ * When no mode is active, one click selects live harmonizer after the double
+ * click window expires, and two clicks select song player immediately. When a
+ * mode is active, one press becomes an exit request consumed by the state
+ * machine.
  */
 
 #include "Mode_Select.h"

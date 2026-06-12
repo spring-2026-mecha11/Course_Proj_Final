@@ -1,8 +1,12 @@
-/*
- * State_Machine.c
+/**
+ * @file State_Machine.c
+ * @brief System sequencing and safety coordination.
  *
- *  Created on: Jun 10, 2026
- *      Author: dreed
+ * The state machine keeps the physical system in a safe order: pressure
+ * sensing calibrates first, the stepper homes before any commanded motion, and
+ * the servo remains muted until a mode can produce valid sound. Active modes
+ * are responsible for their control logic, while this module owns transitions,
+ * exits, and fault behavior.
  */
 
 
@@ -402,10 +406,8 @@ static void State_Machine_ClearFlags(void)
 }
 
 /*
- * Hardware request functions.
- *
- * These are intentionally blank or fake for now.
- * Add real driver calls later.
+ * Request helpers keep state transitions readable and isolate direct calls
+ * into lower-level modules.
  */
 
 static void Hardware_Init_Request(void)

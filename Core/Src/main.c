@@ -2,7 +2,11 @@
 /**
   ******************************************************************************
   * @file           : main.c
-  * @brief          : Main program body
+  * @brief          : CubeMX-generated entry point and peripheral setup.
+  *
+  * The generated startup code initializes clocks and peripherals, then the
+  * user section calls App_Init() and repeatedly calls App_Task(). Project
+  * behavior is documented in the subsystem modules that App_Task() schedules.
   ******************************************************************************
   * @attention
   *
@@ -75,7 +79,6 @@ static void MX_TIM3_Init(void);
 
 /**
   * @brief  The application entry point.
-  * @retval int
   */
 int main(void)
 {
@@ -127,7 +130,6 @@ int main(void)
 
 /**
   * @brief System Clock Configuration
-  * @retval None
   */
 void SystemClock_Config(void)
 {
@@ -172,8 +174,6 @@ void SystemClock_Config(void)
 
 /**
   * @brief ADC1 Initialization Function
-  * @param None
-  * @retval None
   */
 static void MX_ADC1_Init(void)
 {
@@ -224,8 +224,6 @@ static void MX_ADC1_Init(void)
 
 /**
   * @brief I2S2 Initialization Function
-  * @param None
-  * @retval None
   */
 static void MX_I2S2_Init(void)
 {
@@ -258,8 +256,6 @@ static void MX_I2S2_Init(void)
 
 /**
   * @brief SPI3 Initialization Function
-  * @param None
-  * @retval None
   */
 static void MX_SPI3_Init(void)
 {
@@ -296,8 +292,6 @@ static void MX_SPI3_Init(void)
 
 /**
   * @brief TIM2 Initialization Function
-  * @param None
-  * @retval None
   */
 static void MX_TIM2_Init(void)
 {
@@ -355,8 +349,6 @@ static void MX_TIM2_Init(void)
 
 /**
   * @brief TIM3 Initialization Function
-  * @param None
-  * @retval None
   */
 static void MX_TIM3_Init(void)
 {
@@ -443,8 +435,6 @@ static void MX_DMA_Init(void)
 
 /**
   * @brief GPIO Initialization Function
-  * @param None
-  * @retval None
   */
 static void MX_GPIO_Init(void)
 {
@@ -501,7 +491,6 @@ static void MX_GPIO_Init(void)
 
 /**
   * @brief  This function is executed in case of error occurrence.
-  * @retval None
   */
 void Error_Handler(void)
 {

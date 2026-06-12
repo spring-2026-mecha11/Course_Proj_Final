@@ -4,6 +4,10 @@
  *
  * The servo is controlled through a timer configured for 50 Hz PWM with
  * timer counts representing microseconds.
+ *
+ * @defgroup ServoSystem Servo mute
+ * @brief Drives the servo-operated stopper that mutes or opens the whistle.
+ * @{
  */
 
 #ifndef SERVO_SYSTEM_H
@@ -47,4 +51,5 @@ void ServoSystem_Down(void);
  */
 void ServoSystem_Disable(void);
 
+/** @} */
 #endif /* SERVO_SYSTEM_H */

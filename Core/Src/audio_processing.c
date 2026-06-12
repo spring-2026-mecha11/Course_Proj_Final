@@ -1,3 +1,12 @@
+/**
+ * @file audio_processing.c
+ * @brief YIN-style pitch detection for slide-whistle microphone data.
+ *
+ * Each channel accumulates a 512-sample window. When a window is full, the
+ * detector removes DC offset, computes signal energy, and estimates the
+ * fundamental frequency from a cumulative mean normalized difference function.
+ */
+
 #include "audio_processing.h"
 #include <limits.h>
 #include <stdio.h>

@@ -1,3 +1,14 @@
+/**
+ * @file live_harmonizer.c
+ * @brief Pitch-error controller for the automated whistle slide.
+ *
+ * This module runs slower than the audio pipeline. When both microphone
+ * channels have valid pitch estimates, it nudges the stepper target by a
+ * proportional/integral term based on target pitch minus measured pitch. If
+ * either channel is invalid, it stops motion and recenters control around the
+ * current slide position.
+ */
+
 #include "live_harmonizer.h"
 
 #include "System_Config.h"
@@ -13,12 +24,15 @@ static bool control_active;
 volatile float live_harmonizer_kp = 0.05f;
 volatile float live_harmonizer_ki = 0.0001f;
 
+/** @name Live watch variables */
+/** @{ */
 volatile uint8_t debug_live_control_active = 0;
 volatile uint8_t debug_live_stepper_status = 0;
 volatile int32_t debug_live_pitch_error_hz = 0;
 volatile float debug_live_pitch_integral = 0.0f;
 volatile float debug_live_stepper_target_percent = 0.0f;
 volatile float debug_live_nudge_percent = 0.0f;
+/** @} */
 
 static float LiveHarmonizer_ClampPercent(float percent)
 {
