@@ -1,0 +1,19 @@
+/* Project-specific Doxygen Awesome sizing adjustments. */
+
+html {
+  --title-font-size: 20px;
+  --navigation-font-size: 14px;
+}
+
+#projectbrief {
+  font-size: 68%;
+  line-height: 1.35;
+}
+
+#MSearchField {
+  font-size: 14px;
+}
+
+#nav-tree .label {
+  font-size: 14px;
+}
