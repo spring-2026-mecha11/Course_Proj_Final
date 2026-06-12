@@ -36,6 +36,14 @@
 #define LIVE_CONTROL_PERIOD_MS       10u
 #define LIVE_STEPPER_DEADBAND_PCT    0.25f
 
+#define LIVE_PITCH_CONTROL_PERIOD_MS        200u
+#define LIVE_PITCH_CONTROL_SIGN             -1.0f
+#define LIVE_PITCH_ERROR_DEADBAND_HZ        2
+
+#define LIVE_STEPPER_MIN_PERCENT            25.0f
+#define LIVE_STEPPER_START_PERCENT          50.0f
+#define LIVE_STEPPER_MAX_PERCENT            75.0f
+
 /*
  * Song player timing.
  */

@@ -13,6 +13,7 @@
 #include "Stepper_Motion.h"
 #include "servo_system.h"
 #include "audio_system.h"
+#include "live_harmonizer.h"
 
 // Fan Externs
 extern ADC_HandleTypeDef hadc1;
@@ -38,6 +39,7 @@ void App_Init(void)
     ServoSystem_Init(&htim2, TIM_CHANNEL_2);
     State_Machine_Init();
     AudioSystem_Init(&hi2s2);
+    LiveHarmonizer_Reset();
 
     /*
      * Future module init calls:

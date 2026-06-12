@@ -14,6 +14,7 @@
 #include "pressure_system.h"
 #include "servo_system.h"
 #include "audio_system.h"
+#include "live_harmonizer.h"
 
 static SystemState_t system_state = SYS_STATE_BOOT;
 static SystemFlags_t system_flags;
@@ -217,28 +218,30 @@ void State_Machine_Task(uint32_t now_ms)
              *
              * No separate idle-muted top-level state is needed.
              */
-        	Mode_Select_SetModeActive(true);
+            Mode_Select_SetModeActive(true);
 
-        	if (Mode_Select_ConsumeExitRequest())
-        	{
-        	    Servo_SetMuted_Request(true);
-        	    Stepper_Stop_Request();
-        	    Fan_Enable_Request(false);
+            if (Mode_Select_ConsumeExitRequest())
+            {
+                LiveHarmonizer_Reset();
+                Servo_SetMuted_Request(true);
+                Stepper_Stop_Request();
+                Fan_Enable_Request(false);
 
-        	    Live_Harmonizer_Enable_Request(false);
-        	    Song_Player_Enable_Request(false);
+                Live_Harmonizer_Enable_Request(false);
+                Song_Player_Enable_Request(false);
 
-        	    Mode_Select_Reset();
+                Mode_Select_Reset();
 
-        	    system_flags.active_mode = APP_MODE_NONE;
-        	    system_flags.mode_selected = false;
-        	    system_flags.requested_mode = APP_MODE_NONE;
+                system_flags.active_mode = APP_MODE_NONE;
+                system_flags.mode_selected = false;
+                system_flags.requested_mode = APP_MODE_NONE;
 
-        	    system_state = SYS_STATE_MODE_SELECT;
-        	    break;
-        	}
+                system_state = SYS_STATE_MODE_SELECT;
+                break;
+            }
 
             Fan_Enable_Request(true);
+            LiveHarmonizer_Task(now_ms);
 
             if (AudioSystem_TargetValid())
             {
@@ -248,14 +251,13 @@ void State_Machine_Task(uint32_t now_ms)
             {
                 Servo_SetMuted_Request(true);
                 Stepper_Stop_Request();
+                LiveHarmonizer_Reset();
             }
 
             Live_Harmonizer_Enable_Request(true);
             Song_Player_Enable_Request(false);
 
             system_flags.active_mode = APP_MODE_LIVE_HARMONIZER;
-
-            Stepper_DebugPercent_Task();;
 
             /*
              * Future:
