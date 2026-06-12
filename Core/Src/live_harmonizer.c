@@ -10,8 +10,8 @@ static uint32_t last_control_ms;
 static bool timing_initialized;
 static bool control_active;
 
-volatile float live_harmonizer_kp = 0.0f;
-volatile float live_harmonizer_ki = 0.0f;
+volatile float live_harmonizer_kp = 0.05f;
+volatile float live_harmonizer_ki = 0.0001f;
 
 volatile uint8_t debug_live_control_active = 0;
 volatile uint8_t debug_live_stepper_status = 0;
