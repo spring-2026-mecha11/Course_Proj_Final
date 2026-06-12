@@ -131,13 +131,225 @@ measurements.
 
 ## Software and Control
 
-### Main Program Structure
+## 1. System-Level Software Architecture
 
-### Motor and Servo Control
+The software for this project is organized around a task-state architecture. The STM32 hardware peripherals are configured using STM32CubeMX, which generates the initialization code for GPIO, timers, ADC, SPI, I2S, DMA, USB, and system clocks. After the CubeMX-generated hardware initialization is complete, the project transitions into the custom application layer.
 
-### Pressure Control
+The custom application layer begins with `App_Init()`, which initializes the high-level software modules used by the system. These include mode selection, pressure control, servo control, stepper control, audio input processing, the state machine, and the live harmonizer logic. After initialization, the program repeatedly calls `App_Task()` from the main loop. `App_Task()` acts as the main scheduler for the application-level tasks, allowing each subsystem to update without placing low-level hardware details directly inside `main.c`.
 
-### Pitch Detection and Harmonization
+This structure keeps the project modular and easier to debug. CubeMX is responsible for configuring the microcontroller hardware, while the custom application code is responsible for system behavior and coordination between subsystems.
+
+## 2. Task-State Main Architecture
+
+The central control structure of the project is the state machine. The state machine determines what the overall system should be doing at any given time and coordinates the different software modules accordingly.
+
+The major system states are:
+
+```text
+BOOT
+INIT_HARDWARE
+HOME_STEPPER
+MODE_SELECT
+LIVE_HARMONIZER
+SONG_PLAYER
+ERROR
+```
+
+At startup, the system enters a safe initialization sequence. The servo mute is closed, the fan is disabled, and the live harmonizer and song player paths are disabled. After initialization, the stepper motor is homed so the system has a known mechanical zero position.
+
+Once homing is complete, the system enters mode selection. A button-based interface is used to choose the operating mode. A single click selects live harmonizer mode, while a double click selects song player mode.
+
+In live harmonizer mode, the system listens to the audio input, controls the servo mute based on the reference audio signal, and adjusts the stepper position based on pitch error. The state machine also handles mode exit behavior by muting the servo, stopping the stepper, disabling the fan, and returning to mode selection.
+
+The song player mode has a pathway created for future implementation. The state machine can enter song player mode, set the appropriate system flags, and provide a structure for enabling song playback logic in the future. However, as the software currently stands, the song player is essentially an empty placeholder module. It does not yet contain the final note sequencing, stepper movement, or servo timing logic needed for autonomous song playback.
+
+The error state provides a safe fallback condition. If a fault occurs, the system disables active modules, mutes the servo, stops the stepper, turns off the fan, and prevents continued operation until the issue is addressed.
+
+## 3. Stepper Motor Driver Implementation
+
+The stepper motor is controlled through a TMC5240 stepper driver. The low-level TMC driver handles SPI communication with the driver chip, while the `Stepper_Motion` module provides higher-level movement commands for the rest of the system.
+
+The stepper software supports homing, absolute movement, percent-based movement, stopping, and position feedback. The most important functions include:
+
+```c
+Stepper_Init();
+Stepper_Home();
+Stepper_MoveToPercent(float percent);
+Stepper_MoveToAbsSteps(int32_t target_steps);
+Stepper_Stop();
+Stepper_GetPositionPercent();
+Stepper_GetPositionSteps();
+```
+
+The stepper must be homed before normal operation. Homing establishes a known zero position using the mechanical limit switch. Once homed, the software treats the full slide travel range as a 0 to 100 percent scale. This allows the live harmonizer and future song player code to command slide position using percent travel instead of raw step counts.
+
+The calibrated travel range is:
+
+```c
+#define STEPPER_RANGE_STEPS 270000
+```
+
+This means the software maps percent commands to stepper position approximately as:
+
+```text
+0%   -> 0 steps
+50%  -> 135000 steps
+100% -> 270000 steps
+```
+
+The stepper module also uses different motion profiles depending on the type of movement. A safer, slower profile is used for homing and certain direct movement commands. A faster profile is used for percent-based movement, which is important for live harmonizer operation because the slide position must respond quickly to pitch corrections.
+
+Separate current settings are also used for different motion types. Percent-based movement uses a stronger run-current setting to reduce missed steps during active control, while safer current settings are used during other operating conditions.
+
+## 4. Stepper Calibration Process
+
+Stepper calibration was required to determine the safe mechanical travel range of the slide whistle mechanism. The first step was to establish a reliable zero position through the homing routine. After the stepper could consistently home, a temporary debugger-based calibration method was added.
+
+This calibration method allowed absolute step positions to be commanded manually from the debugger. The target step count was gradually increased while observing the physical slide mechanism. This made it possible to find the maximum safe extension without overdriving the mechanism.
+
+After testing, the maximum safe travel was determined to be approximately 270,000 steps. This value was then written into the software as the travel range limit.
+
+```c
+#define STEPPER_RANGE_STEPS 270000
+```
+
+Once this value was established, all percent-based movement commands could be safely mapped within the calibrated range. The software clamps target positions so that commands cannot exceed the minimum or maximum step limits.
+
+The calibration process was important because the slide whistle mechanism has physical travel limits that must be respected. Without this calibration, the stepper could be commanded beyond the safe mechanical range. By calibrating the step range and converting motion to percentages, later control code became easier to write, safer to test, and simpler to tune.
+
+## 5. Servo Mute Driver Implementation
+
+The servo is used as a mute mechanism for the slide whistle. It is controlled with a PWM output generated by one of the STM32 timer channels. The servo driver converts desired angular positions into PWM pulse widths.
+
+The servo module provides simple high-level commands:
+
+```c
+ServoSystem_Up();
+ServoSystem_Down();
+ServoSystem_SetPosition(float angle_degrees);
+```
+
+The servo driver uses a center pulse of approximately 1500 microseconds and converts angle to pulse width using a scale factor. The commanded angle is clamped between minimum and maximum limits so the servo is not driven beyond its intended range.
+
+During startup, the servo is commanded to the down or muted position before PWM is started. This ensures the system begins in a safe muted state.
+
+At the state-machine level, the servo is controlled through mute requests rather than direct angle commands. The state machine uses:
+
+```c
+Servo_SetMuted_Request(true);
+Servo_SetMuted_Request(false);
+```
+
+A muted request closes the servo mute, while an unmuted request opens it.
+
+In live harmonizer mode, the servo opens only when the reference audio signal is valid. If the reference signal disappears, the servo closes after a short delay. This delay helps prevent the servo from bouncing open and closed due to momentary audio dropouts or pitch detection flicker.
+## 6. Fan Pressure Control Module
+
+The fan pressure control module regulates the airflow supplied to the slide whistle. It reads the pressure sensor, compares the measured pressure to a target pressure, and adjusts the fan PWM output using a PI control loop.
+
+During startup, the pressure system performs a calibration sequence to establish a zero-pressure reference. The raw ADC readings from the pressure sensor are averaged during this calibration period to determine the baseline sensor offset. After calibration, new ADC readings are converted into pressure values relative to this zero reference. This helps remove sensor bias and improves consistency between runs.
+
+The measured pressure signal is also filtered before being used by the controller. This reduces noise from the pressure sensor and prevents small measurement fluctuations from causing unnecessary fan speed changes. The filtered pressure value is then compared with the target pressure to calculate pressure error.
+
+During normal operation, the fan is enabled only after an operating mode is selected. Live harmonizer mode uses the live-mode pressure target, while song player mode includes a pathway for a separate song-mode pressure target in the future.
+
+The general control behavior is:
+
+```text id="ebr4m9"
+pressure error = target pressure - measured pressure
+fan command = proportional response + integral response
+```
+
+The module also reports whether the pressure is stable, allowing the system to determine whether airflow has reached the desired operating condition. This module helps provide consistent airflow so the whistle can produce a more stable tone during operation.
+## 7. Audio Signal Processing
+The audio processing code is written in C and runs on the STM32F411 microcontroller. The STM32 receives digital audio from the PCM1802 using the I2S peripheral with DMA. Using DMA allows audio samples to be collected continuously in the background while the main loop handles pitch detection and control logic. The DMA buffer is split into half complete and full complete sections. When either callback occurs, the corresponding flag is set, and the main loop processes that half of the buffer.
+The PCM1802 outputs 24-bit I2S audio, but the pitch detection code only uses the upper 16 bits of each sample. The stereo audio stream is separated into left and right sample arrays. The left microphone (next to the user slide whistle) is used as the target pitch input, and the right microphone (next to the automated slide whistle) is used as the measured slide whistle pitch.
+Pitch detection is performed using the YIN algorithm. Before pitch detection, the code removes the DC offset from the sample window and calculates the signal energy. This energy value is used to reject quiet or noisy signals so that the system does not respond when no valid tone is present. Separate energy thresholds are used for the left and right microphones because each microphone can have different gain and background noise levels.
+The main loop waits for DMA flags, reconstructs the audio samples, updates the pitch detectors, and calculates the pitch error. This error tells the controller whether the whistle pitch is too high or too low compared to the target. The pitch data is then converted into a desired stepper motor position. The motor is commanded as a percentage of its total travel range, where 0% corresponds to the slide position that produces the highest note and 100% corresponds to the lowest note.
+Audio processing is separated into functions for sample reconstruction, energy calculation, pitch detection, and block processing. The DMA callbacks are kept short and only set flags, while the heavier processing is done in the main loop.
+
+
+## 8. Audio-Based Stepper Motion
+
+The live harmonizer is the part of the software that connects the audio input system to the stepper motion system. Its purpose is to adjust the slide position until the measured whistle pitch matches the reference pitch.
+
+The reference microphone determines whether the system should be actively unmuted. If the reference pitch is valid, the servo mute opens. If the reference pitch is not valid, the servo closes and the stepper is stopped or held safely.
+
+When both the reference pitch and measured pitch are valid, the software calculates pitch error:
+
+```text
+pitch error = target pitch - measured pitch
+```
+
+The live harmonizer then uses a PI-style control loop to convert this pitch error into a stepper position correction. The proportional term responds to the current pitch error, while the integral term accumulates error over time to help reduce steady-state offset.
+
+The controller uses debugger-adjustable gains:
+
+```c
+live_harmonizer_kp
+live_harmonizer_ki
+```
+
+The calculated control output is applied as a percentage-based stepper target. The target is clamped to the calibrated travel range so the stepper cannot command the slide outside its safe mechanical limits.
+
+Important live harmonizer debug variables include:
+
+```c
+debug_live_pitch_error_hz
+debug_live_pitch_integral
+debug_live_nudge_percent
+debug_live_stepper_target_percent
+debug_live_control_active
+debug_live_stepper_status
+```
+
+These variables make it possible to tune the controller while watching the actual pitch error, commanded correction, and resulting stepper target.
+
+## 9. Song Player Pathway
+
+A song player pathway was included in the state machine to support future expansion of the project. The system can enter a song player state, set song player flags, and call placeholder song player request functions.
+
+The intended future purpose of song player mode is to automatically command the stepper and servo through a predefined sequence of notes and rests. In that final version, the song player would likely use calibrated stepper percent positions for note pitches and servo mute commands for rests or note separation.
+
+However, in the current implementation, the song player does not yet contain real playback logic. It is essentially an empty module with the surrounding state-machine framework already prepared. This makes it easier to add song playback later without restructuring the rest of the system.
+
+## 10. Debugging and Testing Support
+
+Debugger-accessible variables were added throughout the software to make hardware bring-up and tuning easier. This allows system behavior to be observed directly in STM32CubeIDE without relying on UART print statements.
+
+Examples include:
+
+```c
+debug_system_state
+debug_active_mode
+debug_stepper_homed
+stepper_debug_position
+stepper_debug_percent
+debug_audio_target_pitch_hz
+debug_audio_measured_pitch_hz
+debug_audio_pitch_error_hz
+debug_live_stepper_target_percent
+```
+
+These variables were used to verify mode selection, pressure/fan behavior, servo mute response, I2S audio input, pitch detection, stepper homing, percent-based stepper motion, and live harmonizer control behavior.
+
+This debugging approach was especially useful because multiple hardware systems needed to interact correctly. Being able to watch the system state, audio validity, pitch values, and stepper target position helped isolate problems during development.
+
+## 11. Overall Implementation Summary
+
+Overall, the software is structured as a modular embedded control system. STM32CubeMX handles the low-level microcontroller hardware setup, while the custom application layer uses `App_Init()` and `App_Task()` to initialize and repeatedly update the project’s software modules.
+
+The state machine coordinates the high-level behavior of the system, including startup, homing, mode selection, live harmonizer operation, future song player operation, and error handling.
+
+The stepper driver provides calibrated position control of the slide mechanism. The servo driver provides a simple mute mechanism. The audio system provides real-time pitch detection from two microphone channels. The live harmonizer combines these systems by using audio pitch error to command stepper motion while using the reference audio signal to control the servo mute.
+
+The song player mode is currently only a prepared pathway for future development. The structure is present, but the playback logic has not yet been implemented.
+
+The final result is a software framework that supports safe startup, calibrated stepper motion, servo mute control, real-time audio processing, and future expansion into automated song playback.
+
+
+
+
 
 ## Conclusion
 
