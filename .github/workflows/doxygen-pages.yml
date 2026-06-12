@@ -41,7 +41,7 @@ jobs:
           tar --extract --gzip --file /tmp/doxygen.tar.gz --directory /tmp
           sudo install /tmp/doxygen-1.17.0/bin/doxygen /usr/local/bin/doxygen
           doxygen --version
-          test "$(doxygen --version)" = "1.17.0"
+          doxygen --version | grep --quiet '^1\.17\.0'
 
       - name: Build documentation
         run: doxygen Doxyfile
