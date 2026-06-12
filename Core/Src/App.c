@@ -12,7 +12,7 @@
 #include "pressure_system.h"
 #include "Stepper_Motion.h"
 #include "servo_system.h"
-
+#include "audio_system.h"
 
 // Fan Externs
 extern ADC_HandleTypeDef hadc1;
@@ -20,6 +20,9 @@ extern TIM_HandleTypeDef htim3;
 
 //Servo Extern
 extern TIM_HandleTypeDef htim2;
+
+// Audio Extern
+extern I2S_HandleTypeDef hi2s2;
 
 void App_Init(void)
 {
@@ -34,6 +37,7 @@ void App_Init(void)
     PressureSystem_Init(&hadc1, &htim3, TIM_CHANNEL_1);
     ServoSystem_Init(&htim2, TIM_CHANNEL_2);
     State_Machine_Init();
+    AudioSystem_Init(&hi2s2);
 
     /*
      * Future module init calls:
@@ -65,6 +69,7 @@ void App_Task(void)
      * Live_Harmonizer_Task(now_ms);
      * Song_Player_Task(now_ms);
      */
+    AudioSystem_Task();
     PressureSystem_Update();
     State_Machine_Task(now_ms);
 }

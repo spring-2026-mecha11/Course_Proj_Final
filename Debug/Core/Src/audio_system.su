@@ -1,0 +1,15 @@
+../Core/Src/audio_system.c:65:13:AudioSystem_ReconstructStereoSamples	32	static
+../Core/Src/audio_system.c:90:13:AudioSystem_ProcessAudio	56	static
+../Core/Src/audio_system.c:170:6:AudioSystem_Init	16	static
+../Core/Src/audio_system.c:205:6:AudioSystem_Task	8	static
+../Core/Src/audio_system.c:226:6:AudioSystem_IsRunning	4	static
+../Core/Src/audio_system.c:232:6:AudioSystem_PitchErrorValid	4	static
+../Core/Src/audio_system.c:238:9:AudioSystem_GetPitchErrorHz	4	static
+../Core/Src/audio_system.c:244:10:AudioSystem_GetTargetPitchHz	4	static
+../Core/Src/audio_system.c:250:10:AudioSystem_GetMeasuredPitchHz	4	static
+../Core/Src/audio_system.c:256:9:AudioSystem_TargetValid	4	static
+../Core/Src/audio_system.c:262:9:AudioSystem_MeasuredValid	4	static
+../Core/Src/audio_system.c:268:9:AudioSystem_GetTargetEnergy	4	static
+../Core/Src/audio_system.c:274:9:AudioSystem_GetMeasuredEnergy	4	static
+../Core/Src/audio_system.c:284:6:HAL_I2S_RxHalfCpltCallback	16	static
+../Core/Src/audio_system.c:293:6:HAL_I2S_RxCpltCallback	16	static

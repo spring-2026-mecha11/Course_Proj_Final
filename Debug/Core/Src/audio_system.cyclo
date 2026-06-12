@@ -1,0 +1,15 @@
+../Core/Src/audio_system.c:65:13:AudioSystem_ReconstructStereoSamples	2
+../Core/Src/audio_system.c:90:13:AudioSystem_ProcessAudio	9
+../Core/Src/audio_system.c:170:6:AudioSystem_Init	2
+../Core/Src/audio_system.c:205:6:AudioSystem_Task	4
+../Core/Src/audio_system.c:226:6:AudioSystem_IsRunning	1
+../Core/Src/audio_system.c:232:6:AudioSystem_PitchErrorValid	1
+../Core/Src/audio_system.c:238:9:AudioSystem_GetPitchErrorHz	1
+../Core/Src/audio_system.c:244:10:AudioSystem_GetTargetPitchHz	1
+../Core/Src/audio_system.c:250:10:AudioSystem_GetMeasuredPitchHz	1
+../Core/Src/audio_system.c:256:9:AudioSystem_TargetValid	1
+../Core/Src/audio_system.c:262:9:AudioSystem_MeasuredValid	1
+../Core/Src/audio_system.c:268:9:AudioSystem_GetTargetEnergy	1
+../Core/Src/audio_system.c:274:9:AudioSystem_GetMeasuredEnergy	1
+../Core/Src/audio_system.c:284:6:HAL_I2S_RxHalfCpltCallback	2
+../Core/Src/audio_system.c:293:6:HAL_I2S_RxCpltCallback	2

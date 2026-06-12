@@ -37,9 +37,9 @@
 #define STEPPER_NORMAL_IRUN           20
 #define STEPPER_NORMAL_IHOLD_DELAY    6
 
-#define STEPPER_PERCENT_GLOBALSCALER  160
+#define STEPPER_PERCENT_GLOBALSCALER  192
 #define STEPPER_PERCENT_IHOLD         16
-#define STEPPER_PERCENT_IRUN          24
+#define STEPPER_PERCENT_IRUN          26
 #define STEPPER_PERCENT_IHOLD_DELAY   6
 
 static bool stepper_homed = false;
@@ -135,12 +135,12 @@ void Stepper_ApplySafeProfile(void)
 void Stepper_ApplyNormalProfile(void)
 {
     TMC_Write_Reg(TMC5240_VSTART, 1);
-    TMC_Write_Reg(TMC5240_A1, 6000);
-    TMC_Write_Reg(TMC5240_V1, 30000);
-    TMC_Write_Reg(TMC5240_AMAX, 6000);
-    TMC_Write_Reg(TMC5240_VMAX, 150000);
-    TMC_Write_Reg(TMC5240_DMAX, 6000);
-    TMC_Write_Reg(TMC5240_D1, 6000);
+    TMC_Write_Reg(TMC5240_A1, 12000);
+    TMC_Write_Reg(TMC5240_V1, 60000);
+    TMC_Write_Reg(TMC5240_AMAX, 12000);
+    TMC_Write_Reg(TMC5240_VMAX, 300000);
+    TMC_Write_Reg(TMC5240_DMAX, 12000);
+    TMC_Write_Reg(TMC5240_D1, 12000);
     TMC_Write_Reg(TMC5240_VSTOP, 10);
     TMC_Write_Reg(TMC5240_TZEROWAIT, 0);
 }
