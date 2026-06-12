@@ -88,6 +88,25 @@ interfaces for the pressure sensor, blower fan, and servo motor.
 
 **Audio Breakout Board**
 
+@image html audio-breakout-board.png "Audio breakout board" width=850px
+
+The audio breakout board is responsible for capturing the audio signals from
+both slide whistles and converting the analog microphone outputs into digital
+audio data. A microphone is positioned next to the sound hole of each slide
+whistle to capture its acoustic output with minimal noise interference. The
+microphone signals are first amplified using MAX4466 preamplifiers to increase
+the signal amplitude and improve the digitization.
+
+The amplified audio signals are then sampled by a PCM1802 stereo
+analog-to-digital converter. The PCM1802 converts the analog microphone signals
+into 24-bit digital audio and transmits the data to the main control board using
+the I2S communication protocol. In addition to the audio data, the cable
+connecting the audio breakout board to the main board carries the 5 V and 3.3 V
+power rails, ground, and the clock signals required by the PCM1802 for
+synchronized data transfer. The STM32F411 on the main board receives the
+digital audio stream and processes it in real time to determine the pitch
+produced by each slide whistle.
+
 ### Actuators and Sensors
 
 The system uses an SY42STH38-1684A stepper motor controlled by the TMC5240
@@ -148,11 +167,8 @@ stepper positions. For a three-person team, the remaining scope was still
 appropriately ambitious because the project included two custom PCBs, three
 actuators, three primary sensors, two control loops, and mechanical design work.
 
-The final system worked well at the subsystem level, but the main limitation
-was the blower fan. The fan could not generate enough pressure to use the full
-acoustic range of the slide whistle. A human player naturally changes breath
-pressure to stay in the desired harmonic range across the full range of slide travel. But our automated whistle could only maintain sound in the middle portion of the slide travel. Because of this, the pitch-matching loop worked when the target note was playable on the automated whistle, but
-could not fully match a user playing notes outside that range.
+The final system worked well at the subsystem level, but the main limitations
+where the blower fan and noise isolation between the two microphones. The fan could not generate enough pressure to use the full acoustic range of the slide whistle. A human player naturally changes breath pressure to stay in the desired harmonic range across the full range of slide travel. But our automated whistle could only maintain sound in the middle portion of the slide travel. Because of this, the pitch-matching loop worked when the target note was playable on the automated whistle, but could not fully match a user playing notes outside that range. In addition, because the two microphones were so close together, the sound they heard was not isolated to their individual slide whistle. This cross talk between microphones made the error values we were reading unreliable, furtur reducing the efficacy of our control loop.
 
 ### Challenges and Workarounds
 
@@ -175,10 +191,9 @@ problem look like a sensor issue at first. After isolating the issue to the
 communication path, we fixed the data transport so the pitch readings could be
 used correctly.
 
-The biggest future improvement would be a higher-pressure blower or redesigned
+The biggest two future improvements would be a higher-pressure blower or redesigned
 airflow path so the automated whistle can reach the same notes as a human
-player. With a wider usable acoustic range, the pitch-matching control loop
-would be much more effective. MIDI support could also be revisited once this limitation is solved.
+player in addition to proper noise isolation between the two microphones. With a wider usable acoustic range and an accurate pitch error, the pitch-matching control loop would be much more effective. MIDI support could also be revisited once the note range limitation is solved.
 
 ### Demonstration and Attachments
 
