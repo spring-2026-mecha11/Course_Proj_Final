@@ -256,7 +256,7 @@ During normal operation, the fan is enabled only after an operating mode is sele
 
 The general control behavior is:
 
-```text id="ebr4m9"
+```text
 pressure error = target pressure - measured pressure
 fan command = proportional response + integral response
 ```
