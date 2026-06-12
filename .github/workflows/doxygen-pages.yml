@@ -34,11 +34,13 @@ jobs:
 
       - name: Install Doxygen 1.17.0
         run: |
-          curl --fail --location --silent --show-error \
+          curl --fail --location --show-error \
+            --retry 5 --retry-delay 2 --retry-all-errors \
             --output /tmp/doxygen.tar.gz \
             https://github.com/doxygen/doxygen/releases/download/Release_1_17_0/doxygen-1.17.0.linux.bin.tar.gz
           tar --extract --gzip --file /tmp/doxygen.tar.gz --directory /tmp
           sudo install /tmp/doxygen-1.17.0/bin/doxygen /usr/local/bin/doxygen
+          doxygen --version
           test "$(doxygen --version)" = "1.17.0"
 
       - name: Build documentation
