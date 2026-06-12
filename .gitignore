@@ -1,0 +1,32 @@
+# macOS metadata
+.DS_Store
+**/.DS_Store
+
+# STM32CubeIDE build output
+Debug/
+Release/
+
+# Compiler and linker artifacts
+*.o
+*.d
+*.su
+*.cyclo
+*.elf
+*.map
+*.list
+
+# Doxygen generated output and local drafts
+docs/doxygen-template/
+docs/html/
+docs/doxygen-warnings.log
+
+# Temporary and editor files
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+*~
+
+# Local notes
+ChatGPT Conversation.md
