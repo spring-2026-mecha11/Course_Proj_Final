@@ -59,17 +59,3 @@ Course_Proj_Final/
 ├── Doxyfile                  # Doxygen configuration
 └── README.md
 ```
-
-## Documentation
-
-The published documentation site is hosted with GitHub Pages:
-
-[https://spring-2026-mecha11.github.io/Course_Proj_Final/](https://spring-2026-mecha11.github.io/Course_Proj_Final/)
-
-To regenerate the local Doxygen output from the repository root:
-
-```sh
-doxygen Doxyfile
-```
-
-The Doxygen configuration uses `docs/doxygen/mainpage.md` as the main page and documents the team-written firmware in `Core/Inc` and `Core/Src`.
